@@ -67,7 +67,7 @@ async def forgot_password_service(data: ForgotPasswordRequest, session: Session)
             "sub": user.email,
             "purpose": "password_reset",
         },
-        expires_delta=timedelta(minutes=15),
+        expires_delta=timedelta(minutes=60),
     )
 
     await send_reset_email(

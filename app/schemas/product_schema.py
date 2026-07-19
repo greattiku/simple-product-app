@@ -24,7 +24,7 @@ class ProductDto(BaseModel):
     pictures: list[str]
     created_at: datetime
     updated_at: datetime
-
+    admin_id: int 
     model_config = ConfigDict(from_attributes=True)
 
 

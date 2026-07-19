@@ -7,25 +7,22 @@ from jose import JWTError, jwt
 from fastapi import Depends, HTTPException
 from sqlmodel import Session, select
 from app.session import get_session
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordBearer
 from app.core.env import (
     AUTH_SECRET_KEY,
     ALGORITHM,
 )
 from app.model.user import User, UserRole
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
-# load_dotenv()
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/admin/login")
 
-# AUTH_SECRET_KEY = os.getenv("AUTH_SECRET_KEY")
-# ALGORITHM = os.getenv("ALGORITHM", "HS256")
-
-
+security = HTTPBearer()
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
     session: Session = Depends(get_session),
 ):
+    token = credentials.credentials
     try:
         payload = jwt.decode(
             token,
