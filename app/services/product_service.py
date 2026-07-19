@@ -6,12 +6,14 @@ from fastapi import HTTPException
 from sqlmodel import Session, func, select
 
 from app.model.product import Product
-from app.schema import CreateProduct, ProductDto, ProductResponse, UpdateProduct
+from app.model.user import User
+from app.schemas.product_schema import CreateProduct, ProductDto, ProductResponse, UpdateProduct
 
 
-def create_product(
+def create_product_service(
     product: CreateProduct,
-    session: Session
+    session: Session,
+    current_admin: User,
 ) -> ProductResponse:
 
     existing_product = session.exec(
@@ -28,7 +30,8 @@ def create_product(
         name=product.name,
         description=product.description,
         cost=product.cost,
-        pictures=product.pictures
+        pictures=product.pictures,
+        admin_id=current_admin.id,
     )
 
     session.add(db_product)
@@ -67,10 +70,13 @@ def get_products(session: Session) -> list[ProductDto]:
         for product in products
     ]
 
+
+
 def update_product(
     product_id: int,
     updated_product: UpdateProduct,
     session: Session,
+    current_admin: User,
 ) -> ProductResponse:
 
     product = session.get(Product, product_id)
@@ -80,6 +86,12 @@ def update_product(
             status_code=404,
             detail=f"Product with id {product_id} not found.",
         )
+    
+    if product.admin_id != current_admin.id:
+        raise HTTPException(
+        status_code=403,
+        detail="You cannot edit another admin's product."
+    )
 
     update_data = updated_product.model_dump(
         exclude_unset=True
@@ -105,6 +117,7 @@ def update_product(
 def delete_product(
     product_id: int,
     session: Session,
+    current_admin: User,
 ) -> dict:
 
     product = session.get(Product, product_id)
@@ -114,6 +127,12 @@ def delete_product(
             status_code=404,
             detail=f"Product with id {product_id} not found."
         )
+    
+    if product.admin_id != current_admin.id:
+        raise HTTPException(
+        status_code=403,
+        detail="You cannot delete another admin's product."
+    )
 
     session.delete(product)
 

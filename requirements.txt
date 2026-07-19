@@ -5,3 +5,7 @@ psycopg[binary]
 pydantic-settings 
 python-dotenv
 sqlalchemy
+pwdlib[argon2]
+dotenv
+python-jose[cryptography]
+fastapi-mail
