@@ -2,6 +2,9 @@ import os
 
 from dotenv import load_dotenv
 from fastapi_mail import ConnectionConfig
+from fastapi_mail import FastMail, MessageSchema, MessageType
+from app.core.email import conf
+
 
 load_dotenv()
 
@@ -17,9 +20,6 @@ conf = ConnectionConfig(
     USE_CREDENTIALS=True,
 )
 
-from fastapi_mail import FastMail, MessageSchema, MessageType
-
-from app.core.email import conf
 
 
 async def send_reset_email(
