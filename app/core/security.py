@@ -28,7 +28,7 @@ def create_access_token(data: dict,expires_delta: timedelta | None = None):
     payload = data.copy()
 
     expire = datetime.now(timezone.utc) + (
-        expires_delta or timedelta(minutes=5)
+        expires_delta or timedelta(hours=60)
     )
 
     payload.update({"exp": expire})
